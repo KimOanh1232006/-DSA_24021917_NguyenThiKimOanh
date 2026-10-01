@@ -1,0 +1,85 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+void inDanhSach(const vector<int>& danhSach) {
+    cout << "[ ";
+    for (int phanTu : danhSach) {
+        cout << phanTu << " ";
+    }
+    cout << "]\n";
+}
+
+int main() {
+   
+    vector<int> danhSach = {10, 20, 30, 40};
+    cout << "Danh sach ban dau: ";
+    inDanhSach(danhSach);
+    cout << "-------------------------------------\n";
+    int viTriCanLay = 2;
+    cout << " Gia tri tai vi tri " << viTriCanLay << " la: " << danhSach[viTriCanLay] << "\n";
+
+    //  CHÈN PHẦN TỬ VÀO ĐẦU 
+    int giaTriChenDau = 5;
+    danhSach.push_back(0); 
+    for (int i = danhSach.size() - 1; i > 0; i--) {
+        danhSach[i] = danhSach[i - 1]; 
+    }
+    danhSach[0] = giaTriChenDau; 
+    cout << " Sau khi chen " << giaTriChenDau << " vao DAU: ";
+    inDanhSach(danhSach);
+
+    //  CHÈN PHẦN TỬ VÀO CUỐI 
+    int giaTriChenCuoi = 50;
+    danhSach.push_back(giaTriChenCuoi);
+    cout << " Sau khi chen " << giaTriChenCuoi << " vao CUOI: ";
+    inDanhSach(danhSach);
+
+    //  CHÈN VÀO VỊ TRÍ i -> O(n) 
+    int viTriChen = 3;
+    int giaTriChenGiua = 25;
+    danhSach.push_back(0); 
+    for (int i = danhSach.size() - 1; i > viTriChen; i--) {
+        danhSach[i] = danhSach[i - 1]; 
+    }
+    danhSach[viTriChen] = giaTriChenGiua; 
+    cout << " Sau khi chen " << giaTriChenGiua << " vao vi tri " << viTriChen << ": ";
+    inDanhSach(danhSach);
+
+    // XÓA PHẦN TỬ ĐẦU -> O(n) 
+    for (int i = 0; i < danhSach.size() - 1; i++) {
+        danhSach[i] = danhSach[i + 1]; 
+    }
+    danhSach.pop_back(); 
+    cout << " Sau khi XOA phan tu DAU: ";
+    inDanhSach(danhSach);
+
+    //  XÓA PHẦN TỬ CUỐI -> O(1)
+    danhSach.pop_back();
+    cout << " Sau khi XOA phan tu CUOI: ";
+    inDanhSach(danhSach);
+
+    //  XÓA Ở VỊ TRÍ i -> O(n) 
+    int viTriXoa = 2;
+    for (int i = viTriXoa; i < danhSach.size() - 1; i++) {
+        danhSach[i] = danhSach[i + 1]; 
+    }
+    danhSach.pop_back(); 
+    cout << " Sau khi XOA o vi tri " << viTriXoa << ": ";
+    inDanhSach(danhSach);
+
+    //  DUYỆT XUÔI -> O(n)
+    cout << " Duyet XUOI: ";
+    for (int i = 0; i < danhSach.size(); i++) {
+        cout << danhSach[i] << " ";
+    }
+    cout << "\n";
+
+    //  DUYỆT NGƯỢC -> O(n)
+    cout << " Duyet NGUOC: ";
+    for (int i = danhSach.size() - 1; i >= 0; i--) {
+        cout << danhSach[i] << " ";
+    }
+    cout << "\n";
+
+    return 0;
+}
