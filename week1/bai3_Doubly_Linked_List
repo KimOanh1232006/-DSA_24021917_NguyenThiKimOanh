@@ -1,0 +1,234 @@
+#include <iostream>
+using namespace std;
+struct Nut {
+    int giaTri;
+    Nut* tiepTheo; 
+    Nut* truocDo;  
+
+    // Ham tao
+    Nut(int val) {
+        giaTri = val;
+        tiepTheo = nullptr;
+        truocDo = nullptr;
+    }
+};
+
+
+class DanhSachLienKetDoi {
+public:
+    Nut* dau;  
+    Nut* cuoi; 
+
+    DanhSachLienKetDoi() {
+        dau = nullptr;
+        cuoi = nullptr;
+    }
+
+    
+    int truyCap(int viTri) {
+        Nut* hienTai = dau;
+        int chiSo = 0;
+
+        while (hienTai != nullptr) {
+            if (chiSo == viTri) {
+                return hienTai->giaTri;
+            }
+            chiSo++;
+            hienTai = hienTai->tiepTheo;
+        }
+
+        cout << "\n[Loi] Vi tri khong hop le! ";
+        return -1;
+    }
+
+    //  CHÈN PHẦN TỬ VÀO ĐẦU -> O(1)
+    void chenDau(int giaTri) {
+        Nut* nutMoi = new Nut(giaTri);
+
+        if (dau == nullptr) {
+            dau = cuoi = nutMoi;
+            return;
+        }
+
+        nutMoi->tiepTheo = dau;
+        dau->truocDo = nutMoi;
+        dau = nutMoi; 
+    }
+
+    //  CHÈN PHẦN TỬ VÀO CUỐI -> O(1) 
+    void chenCuoi(int giaTri) {
+        Nut* nutMoi = new Nut(giaTri);
+
+        if (cuoi == nullptr) { 
+            dau = cuoi = nutMoi;
+            return;
+        }
+
+        cuoi->tiepTheo = nutMoi;
+        nutMoi->truocDo = cuoi;
+        cuoi = nutMoi; 
+    }
+
+    // CHÈN VÀO VỊ TRÍ i -> O(n)
+    void chenViTri(int viTri, int giaTri) {
+        if (viTri == 0) {
+            chenDau(giaTri);
+            return;
+        }
+
+        Nut* hienTai = dau;
+        for (int i = 0; i < viTri - 1 && hienTai != nullptr; i++) {
+            hienTai = hienTai->tiepTheo;
+        }
+
+        if (hienTai == nullptr || hienTai == cuoi) {
+            chenCuoi(giaTri);
+            return;
+        }
+
+        Nut* nutMoi = new Nut(giaTri);
+        Nut* nutSau = hienTai->tiepTheo;
+
+        nutMoi->tiepTheo = nutSau;
+        nutMoi->truocDo = hienTai;
+        hienTai->tiepTheo = nutMoi;
+        nutSau->truocDo = nutMoi;
+    }
+
+    // XÓA PHẦN TỬ ĐẦU -> O(1)
+    void xoaDau() {
+        if (dau == nullptr) return;
+
+        Nut* nutTam = dau;
+
+        if (dau == cuoi) { 
+            dau = cuoi = nullptr;
+        } else {
+            dau = dau->tiepTheo;
+            dau->truocDo = nullptr;
+        }
+
+        delete nutTam;
+    }
+
+    //  XÓA PHẦN TỬ CUỐI -> O(1) 
+    void xoaCuoi() {
+        if (cuoi == nullptr) return;
+
+        Nut* nutTam = cuoi;
+
+        if (dau == cuoi) { 
+            dau = cuoi = nullptr;
+        } else {
+            cuoi = cuoi->truocDo;
+            cuoi->tiepTheo = nullptr;
+        }
+
+        delete nutTam;
+    }
+
+    //  XÓA Ở VỊ TRÍ i -> O(n)
+    void xoaViTri(int viTri) {
+        if (dau == nullptr) return;
+
+        if (viTri == 0) {
+            xoaDau();
+            return;
+        }
+
+        Nut* hienTai = dau;
+        for (int i = 0; i < viTri && hienTai != nullptr; i++) {
+            hienTai = hienTai->tiepTheo;
+        }
+
+        if (hienTai == nullptr) return;
+
+        if (hienTai == cuoi) {
+            xoaCuoi();
+            return;
+        }
+
+    
+        hienTai->truocDo->tiepTheo = hienTai->tiepTheo;
+        hienTai->tiepTheo->truocDo = hienTai->truocDo;
+        delete hienTai;
+    }
+
+    //  DUYỆT XUÔI  -> O(n)
+    void duyetXuoi() {
+        Nut* hienTai = dau;
+        cout << "NULL  ";
+        while (hienTai != nullptr) {
+            cout << hienTai->giaTri << "  ";
+            hienTai = hienTai->tiepTheo;
+        }
+        cout << "NULL\n";
+    }
+
+    //  DUYỆT NGƯỢC  -> O(n) 
+    void duyetNguoc() {
+        Nut* hienTai = cuoi; 
+        cout << "NULL  ";
+        while (hienTai != nullptr) {
+            cout << hienTai->giaTri << "  ";
+            hienTai = hienTai->truocDo; 
+        }
+        cout << "NULL\n";
+    }
+};
+
+int main() {
+    DanhSachLienKetDoi ds;
+
+    // Khoi tao danh sach
+    ds.chenCuoi(10);
+    ds.chenCuoi(20);
+    ds.chenCuoi(30);
+    ds.chenCuoi(40);
+
+    cout << "Danh sach ban dau: ";
+    ds.duyetXuoi();
+ 
+    //  Truy cap
+    cout << " Gia tri tai vi tri index 2: " << ds.truyCap(2) << "\n";
+
+    //  Chen dau
+    ds.chenDau(5);
+    cout << " Sau khi chen 5 vao DAU: ";
+    ds.duyetXuoi();
+
+    //  Chen cuoi
+    ds.chenCuoi(50);
+    cout << " Sau khi chen 50 vao CUOI: ";
+    ds.duyetXuoi();
+
+    //  Chen vi tri i
+    ds.chenViTri(3, 25);
+    cout << " Sau khi chen 25 vao vi tri index 3: ";
+    ds.duyetXuoi();
+
+    //  Xoa dau
+    ds.xoaDau();
+    cout << " Sau khi XOA phan tu DAU: ";
+    ds.duyetXuoi();
+
+    //  Xoa cuoi
+    ds.xoaCuoi();
+    cout << " Sau khi XOA phan tu CUOI: ";
+    ds.duyetXuoi();
+
+    //  Xoa vi tri i
+    ds.xoaViTri(2);
+    cout << " Sau khi XOA o vi tri index 2: ";
+    ds.duyetXuoi();
+
+    //  Duyet xuoi
+    cout << " Duyet XUOI:  ";
+    ds.duyetXuoi();
+
+    //  Duyet nguoc
+    cout << " Duyet NGUOC: ";
+    ds.duyetNguoc();
+
+    return 0;
+}
